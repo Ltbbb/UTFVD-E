@@ -3,8 +3,9 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2
+import math
 
-GUIDE = "V1"
+GUIDE = "V11"
 DATA_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Captures"
 CROP_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Crop"
 test_filename = "edwin_L_Index_50_1_0.png"
@@ -12,9 +13,7 @@ test_filename = "edwin_L_Index_50_1_0.png"
 FULL_DATA_DIRECTORY = os.path.join(DATA_DIRECTORY, GUIDE)
 FULL_CROP_DIRECTORY = os.path.join(CROP_DIRECTORY, GUIDE)
 
-def crop_and_rotate(filename):
-    # Opens a image in RGB mode
-    im = Image.open(os.path.join(FULL_DATA_DIRECTORY, filename))
+def preprocess(img):
 
     #Image cropping
     left = 360
@@ -22,10 +21,15 @@ def crop_and_rotate(filename):
     top = 50
     bottom = 600
     # crop img using points
-    im1 = im.crop((left, top, right, bottom))
+    img = img.crop((left, top, right, bottom))
+
+    #Image compression
+    width, height = img.size
+    new_width, new_height =  math.floor(width/1.5), math.floor(height/1.5)
+    img = img.resize((new_width, new_height), Image.LANCZOS)
 
     #Image rotation
-    arr = np.array(im1)
+    arr = np.array(img)
     rotate = np.rot90(arr)
     
     #Histogram equalization
@@ -37,17 +41,17 @@ def crop_and_rotate(filename):
     # disp = Image.fromarray(disp)
     # disp.show()
    
-    # Save img
-    result = Image.fromarray(equ)
-    plt.imsave(os.path.join(FULL_CROP_DIRECTORY, filename), result, cmap="grey")
+    # Return as a PIL.img
+    return Image.fromarray(equ)
 
-# crop_and_rotate(test_filename)
+# preprocess(test_filename)
 
-def batch_ROI(src_directory):
-    print(src_directory)
+def batch_preprocess(src_directory):
     for file in os.listdir(src_directory):
         filename = os.fsdecode(file)
-        crop_and_rotate(filename)
-    print("[INFO] Batch ROI determination completed")
+        img = Image.open(os.path.join(FULL_DATA_DIRECTORY, filename), mode="r")
+        result = preprocess(img)
+        plt.imsave(os.path.join(FULL_CROP_DIRECTORY, filename), result, cmap="grey")
+    print("[INFO] Batch preprocessing completed")
 
-batch_ROI(FULL_DATA_DIRECTORY)
+# batch_preprocess(FULL_DATA_DIRECTORY)

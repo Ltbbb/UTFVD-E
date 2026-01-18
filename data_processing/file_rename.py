@@ -1,8 +1,8 @@
 
 import os
 
-directory_path = "C:\\Users\\Gebruiker\\Documents\\MATLAB\\UTSID\\Data\\V4"
-test_file_name = "edwin_L_index_50_1_0.png"
+directory_path = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Originals\\V4"
+# test_file_name = "edwin_L_index_50_1_0.png"
 
 def refactor_file(filename):
     filename = filename[:-4]
@@ -24,5 +24,5 @@ def refactor_files(directory):
         print(new_filename)
         os.rename(old_filename, new_filename)
 
-refactor_file(test_file_name)
+# refactor_file(test_file_name)
 refactor_files(directory_path)
