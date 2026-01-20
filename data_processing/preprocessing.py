@@ -72,7 +72,6 @@ def batch_preprocess(src_directory):
 # batch_preprocess(FULL_DATA_DIRECTORY)
 
 def generate_template(img):
-
     img = ImageOps.grayscale(img) 
     im_arr = np.array(img)
     region, edges = lee_region(im_arr, 4, 40)
@@ -89,4 +88,4 @@ def batch_templates(src_directory):
         plt.imsave(os.path.join(FULL_TEMPL_DIRECTORY, filename), result, cmap="grey") #TODO: CMAP?
     print("[INFO] Batch template generation completed")
 
-batch_templates(FULL_CROP_DIRECTORY)
+# batch_templates(FULL_CROP_DIRECTORY)

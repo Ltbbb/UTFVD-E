@@ -1,21 +1,16 @@
-import os, h5py, itertools, datetime
+import os, h5py, itertools, datetime, matplotlib
 import numpy as np
-import seaborn as sns
 from PIL import Image
-import matplotlib
 import matplotlib.pyplot as plt
-from MATLAB.lee_region import lee_region
-from MATLAB.huang_normalise import huang_normalise
 import data_processing.preprocessing as prep
 from Miura.MaximumCurvature import MaximumCurvature
 from Miura.MiuraMatch import MiuraMatch
-from data_processing.generate_template import generate_template
 
 max_curvature = MaximumCurvature()
 miura_match = MiuraMatch()
 
-GUIDE = "V1"
-DEVICE = prep.Device.UTSID
+GUIDE = "VU"
+DEVICE = prep.Device.UTFVD
 DATA_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Captures"
 CROP_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Crop"
 
@@ -92,9 +87,10 @@ range = [0.0,0.5]
 
 plt.hist(match, range=range, density=True, bins=60, alpha=0.5, color='blue', label='Matching')
 plt.hist(nomatch, range=range, density=True, bins=60, alpha=0.5, color='red', label='Non-Matching')
-plt.title('Normalized Histogram')
+plt.title(f'Bundling Guide {GUIDE}')
 plt.xlabel('Correlation Score')
 plt.ylabel('Normalized Frequency')
+# plt.ylim(0,35)
 plt.legend(loc='upper right')
 
 plt.show()
