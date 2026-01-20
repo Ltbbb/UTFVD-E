@@ -13,7 +13,7 @@ test_filename = "edwin_L_Index_50_1_0.png"
 FULL_DATA_DIRECTORY = os.path.join(DATA_DIRECTORY, GUIDE)
 FULL_CROP_DIRECTORY = os.path.join(CROP_DIRECTORY, GUIDE)
 
-def preprocess(img):
+def preprocess_UTSID(img):
 
     #Image cropping
     left = 360
@@ -44,13 +44,44 @@ def preprocess(img):
     # Return as a PIL.img
     return Image.fromarray(equ)
 
+def preprocess_UTFVD(img):
+
+    #Image compression
+    width, height = img.size
+    new_width, new_height =  math.floor(width/1.5), math.floor(height/1.5)
+    img = img.resize((new_width, new_height), Image.LANCZOS)
+
+    #Image rotation
+    arr = np.array(img)
+    rotate = np.rot90(arr)
+    
+    #Histogram equalization
+    equ = cv2.equalizeHist(rotate)
+
+    #Show images next to each other
+    # disp = np.hstack((rotate,equ)) #stacking images side-by-side
+    # disp = Image.fromarray(disp)
+    # disp.show()
+   
+    # Return as a PIL.img
+    return Image.fromarray(equ)
+
+
 # preprocess(test_filename)
 
-def batch_preprocess(src_directory):
+def batch_preprocess_UTSID(src_directory):
     for file in os.listdir(src_directory):
         filename = os.fsdecode(file)
         img = Image.open(os.path.join(FULL_DATA_DIRECTORY, filename), mode="r")
-        result = preprocess(img)
+        result = preprocess_UTSID(img)
+        plt.imsave(os.path.join(FULL_CROP_DIRECTORY, filename), result, cmap="grey")
+    print("[INFO] Batch preprocessing completed")
+
+def batch_preprocess_UTFVD(src_directory):
+    for file in os.listdir(src_directory):
+        filename = os.fsdecode(file)
+        img = Image.open(os.path.join(FULL_DATA_DIRECTORY, filename), mode="r")
+        result = preprocess_UTFVD(img)
         plt.imsave(os.path.join(FULL_CROP_DIRECTORY, filename), result, cmap="grey")
     print("[INFO] Batch preprocessing completed")
 
