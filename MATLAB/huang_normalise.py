@@ -80,10 +80,10 @@ def huang_normalise(img, region, edges):
     rot = rot*(180/np.pi); # Convert radians to degrees
     return img_transformed, region_transformed, rot, tr
 
-from lee_region import lee_region
+# from MATLAB.lee_region import lee_region
 
-imgpath1 = "MATLAB/1_comp.png"
-img1 = cv2.imread(imgpath1, 0)
-region, edges = lee_region(img1, 4, 40)
-huang_normalise(img1, region, edges)
+# imgpath1 = "MATLAB/1_comp.png"
+# img1 = cv2.imread(imgpath1, 0)
+# region, edges = lee_region(img1, 4, 40)
+# huang_normalise(img1, region, edges)
 

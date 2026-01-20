@@ -5,14 +5,17 @@ from PIL import Image
 import matplotlib
 import matplotlib.pyplot as plt
 from MATLAB.lee_region import lee_region
-from data_processing.preprocessing import preprocess
+from MATLAB.huang_normalise import huang_normalise
+import data_processing.preprocessing as prep
 from Miura.MaximumCurvature import MaximumCurvature
 from Miura.MiuraMatch import MiuraMatch
+from data_processing.generate_template import generate_template
 
 max_curvature = MaximumCurvature()
 miura_match = MiuraMatch()
 
-GUIDE = "VU"
+GUIDE = "V1"
+DEVICE = prep.Device.UTSID
 DATA_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Captures"
 CROP_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Crop"
 
@@ -28,11 +31,8 @@ def load_imgs(directory):
         im = Image.open(os.path.join(directory, filename))
 
         #Preprocess the image
-        im = preprocess(im)
-
-        im_arr = np.array(im)
-        mask, _ = lee_region(im_arr, 4, 40)
-        templ = max_curvature(im_arr, mask)
+        im = prep.preprocess(im, DEVICE)
+        templ = prep.generate_template(im)
 
         print("[INFO] Processed Image")
 
@@ -48,7 +48,6 @@ def compare_whole_dataset(dict):
         thing = filename.split("_")
         return thing[:3]
     
-
     matching_values = []
     non_matching_values = []
 
@@ -81,12 +80,13 @@ def compare_whole_dataset(dict):
 
     return matching_values, non_matching_values
 
-# dictonairy = load_imgs(FULL_DATA_DIRECTORY)
-# match, nomatch = compare_whole_dataset(dictonairy)
-# print(match,nomatch)
 
-match = [0.24684919600173838, 0.21328531412565027] 
-nomatch = [0.08908868001634655, 0.09439788266431408, 0.10506329113924051, 0.10232558139534885, 0.08989266547406083, 0.09339158929546695, 0.09181553801412548, 0.08732737611697808, 0.09001636661211129, 0.09636062861869313, 0.09090909090909093, 0.08726534753932014, 0.11326994625878462, 0.10982658959537572, 0.1079136690647482, 0.09909090909090909, 0.08041329739442948, 0.11826159632260763, 0.11102139685102948, 0.10261914984972093, 0.08593396653098144, 0.09418402777777779, 0.08337303477846593, 0.10524073285044738, 0.10618216139688533, 0.09639953542392567]
+dictonairy = load_imgs(FULL_DATA_DIRECTORY)
+match, nomatch = compare_whole_dataset(dictonairy)
+print(match,nomatch)
+
+# match = [0.24684919600173838, 0.21328531412565027] 
+# nomatch = [0.08908868001634655, 0.09439788266431408, 0.10506329113924051, 0.10232558139534885, 0.08989266547406083, 0.09339158929546695, 0.09181553801412548, 0.08732737611697808, 0.09001636661211129, 0.09636062861869313, 0.09090909090909093, 0.08726534753932014, 0.11326994625878462, 0.10982658959537572, 0.1079136690647482, 0.09909090909090909, 0.08041329739442948, 0.11826159632260763, 0.11102139685102948, 0.10261914984972093, 0.08593396653098144, 0.09418402777777779, 0.08337303477846593, 0.10524073285044738, 0.10618216139688533, 0.09639953542392567]
 
 range = [0.0,0.5]
 
@@ -116,6 +116,6 @@ def DETCurve(fps,fns):
     plt.axis([0.001,50,0.001,50])
     plt.show()
 
-DETCurve(match.mean(), nomatch.mean())
+# DETCurve(match.mean(), nomatch.mean())
 
 
