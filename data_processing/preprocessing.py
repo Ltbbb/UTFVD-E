@@ -13,12 +13,12 @@ class Device(Enum):
     UTSID = 1
     UTFVD = 2
 
-GUIDE = "V11"
-DEVICE = Device.UTFVD
+GUIDE = "V1"
+DEVICE = Device.UTSID
 DATA_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Captures"
 CROP_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Crop"
 TEMPL_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Templates"
-test_filename = "edwin_L_Index_50_1_0.png"
+test_filename = "simay_L_Middle_1_3_30.png"
 
 FULL_DATA_DIRECTORY = os.path.join(DATA_DIRECTORY, GUIDE)
 FULL_CROP_DIRECTORY = os.path.join(CROP_DIRECTORY, GUIDE)
@@ -32,9 +32,15 @@ def preprocess(img, device: Device):
         left = 360
         right = 700
         top = 50
-        bottom = 600
-        # crop img using points
-        img = img.crop((left, top, right, bottom))
+        bottom = 520
+    else:
+        left = 0
+        right = 590
+        top = 0
+        bottom = 330
+
+    # crop img using points
+    img = img.crop((left, top, right, bottom))
 
     #Image compression
     width, height = img.size
@@ -43,15 +49,15 @@ def preprocess(img, device: Device):
 
     #Image rotation
     arr = np.array(img)
-    rotate = np.rot90(arr)
-    
-    #Histogram equalization
     if device == Device.UTSID:
-        rotate = cv2.cvtColor(rotate, cv2.COLOR_BGR2GRAY)   
-    equ = cv2.equalizeHist(rotate)
+        arr = np.rot90(arr)
+        arr = cv2.cvtColor(arr, cv2.COLOR_BGR2GRAY) 
+    
+    #Histogram equalization          
+    equ = cv2.equalizeHist(arr)
 
     #Show images next to each other
-    # disp = np.hstack((rotate,equ)) #stacking images side-by-side
+    # disp = np.hstack((arr,equ)) #stacking images side-by-side
     # disp = Image.fromarray(disp)
     # disp.show()
    
@@ -59,7 +65,8 @@ def preprocess(img, device: Device):
     result = Image.fromarray(equ)
     return result
 
-# preprocess(test_filename)
+# img = Image.open(os.path.join(FULL_DATA_DIRECTORY, test_filename), mode="r")
+# preprocess(img, DEVICE)
 
 def batch_preprocess(src_directory):
     for file in os.listdir(src_directory):
@@ -69,7 +76,7 @@ def batch_preprocess(src_directory):
         plt.imsave(os.path.join(FULL_CROP_DIRECTORY, filename), result, cmap="grey")
     print("[INFO] Batch preprocessing completed")
 
-# batch_preprocess(FULL_DATA_DIRECTORY)
+batch_preprocess(FULL_DATA_DIRECTORY)
 
 def generate_template(img):
     img = ImageOps.grayscale(img) 
@@ -77,6 +84,7 @@ def generate_template(img):
     region, edges = lee_region(im_arr, 4, 40)
     im_arr, region, _, _ = huang_normalise(im_arr, region, edges)
     templ = max_curvature(im_arr, region)
+    print("[INFO] Template Generated")
 
     return templ
 
@@ -88,4 +96,4 @@ def batch_templates(src_directory):
         plt.imsave(os.path.join(FULL_TEMPL_DIRECTORY, filename), result, cmap="grey") #TODO: CMAP?
     print("[INFO] Batch template generation completed")
 
-# batch_templates(FULL_CROP_DIRECTORY)
+batch_templates(FULL_CROP_DIRECTORY)

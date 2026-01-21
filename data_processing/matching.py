@@ -1,83 +1,76 @@
 import os, h5py, itertools, datetime, matplotlib
 import numpy as np
+import cv2
 from PIL import Image
 import matplotlib.pyplot as plt
-import data_processing.preprocessing as prep
 from Miura.MaximumCurvature import MaximumCurvature
 from Miura.MiuraMatch import MiuraMatch
+from enum import Enum
 
 max_curvature = MaximumCurvature()
 miura_match = MiuraMatch()
 
-GUIDE = "VU"
-DEVICE = prep.Device.UTFVD
+class Guide(Enum):
+     V1 = 1
+     V2 = 2
+     V3 = 3
+     V4 = 4
+     VU = 5
+
+GUIDE = "V1"
 DATA_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Captures"
 CROP_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Crop"
+TEMPL_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Templates"
 
 FULL_DATA_DIRECTORY = os.path.join(DATA_DIRECTORY, GUIDE)
 FULL_CROP_DIRECTORY = os.path.join(CROP_DIRECTORY, GUIDE)
+FULL_TEMPL_DIRECTORY = os.path.join(TEMPL_DIRECTORY, GUIDE)
 
-def load_imgs(directory):
-    dict = {}
-
-    for file in os.listdir(directory):
-        #Load image
-        filename = os.fsdecode(file)
-        im = Image.open(os.path.join(directory, filename))
-
-        #Preprocess the image
-        im = prep.preprocess(im, DEVICE)
-        templ = prep.generate_template(im)
-
-        print("[INFO] Processed Image")
-
-        #Store in dictionary. The key is the filename and the template object the value
-        dict[filename] = templ.tolist()
-
-    return dict
-
-def compare_whole_dataset(dict):
-    #Function to extract the name and finger portion of the img name
-    #Example: Lisa_L_Index
-    def split(filename):
-        thing = filename.split("_")
-        return thing[:3]
-    
-    matching_values = []
-    non_matching_values = []
-
-    print("[INFO] Scoring all combinations in dataset...")
-    #Iterate over all combinations
-    for a, b in itertools.combinations(dict, 2):
+def compare_whole_dataset(directory):
+        #Function to extract the name and finger portion of the img name
+        #Example: Lisa_L_Index
+        def split(filename):
+            thing = filename.split("_")
+            return thing[:3]
         
-        # img1 = cv2.imread(os.path.join(FULL_DATA_DIRECTORY, a))
-        # img2 = cv2.imread(os.path.join(FULL_DATA_DIRECTORY, b))
+        matching_values = []
+        non_matching_values = []
 
-        templ1 = np.array(dict.get(a))
-        templ2 = np.array(dict.get(b))
+        print("[INFO] Scoring all combinations in dataset...")
 
-        score, _, _ = miura_match.score(templ1, templ2)
-        rounded_score = score.item()
+        #Iterate over all combinations
+        for a, b in itertools.combinations(os.listdir(directory), 2):
+            
+            # img1 = cv2.imread(os.path.join(FULL_DATA_DIRECTORY, a))
+            # img2 = cv2.imread(os.path.join(FULL_DATA_DIRECTORY, b))
 
-        #If the name + finger are the same, add the found value to the corresponding array
-        if split(a) == split(b):
-            matching_values.append(rounded_score)
-        else:
-            non_matching_values.append(rounded_score)
-        print("[INFO] Scoring of pair done")
+            # import the image as pixels
+            img_a = cv2.imread(os.path.join(directory, a), 0)
+            templ1 = np.matrix([[1 if i == 255 else 0 for i in row] for row in img_a])
+            img_b = cv2.imread(os.path.join(directory, b), 0)
+            templ2 = np.matrix([[1 if i == 255 else 0 for i in row] for row in img_b])
 
-    print("[INFO] Matching done") 
+            score, _, _ = miura_match.score(templ1, templ2)
+            rounded_score = score.item()
 
-    time = datetime.datetime.now()
-    with h5py.File("data_processing/data.hdf5", "w") as file:
-        file.create_dataset(str(time) + " " + GUIDE + " matching", data = matching_values)
-        file.create_dataset(str(time) + " " + GUIDE + " non_matching", data = non_matching_values)
+            #If the name + finger are the same, add the found value to the corresponding array
+            if split(a) == split(b):
+                matching_values.append(rounded_score)
+            else:
+                non_matching_values.append(rounded_score)
+            print("[INFO] Scoring of pair done")
 
-    return matching_values, non_matching_values
+        print("[INFO] Matching done") 
 
+        time = datetime.datetime.now()
+        with h5py.File("data_processing/data.hdf5", "w") as file:
+            file.create_dataset(str(time) + " " + GUIDE + " matching", data = matching_values)
+            file.create_dataset(str(time) + " " + GUIDE + " non_matching", data = non_matching_values)
 
-dictonairy = load_imgs(FULL_DATA_DIRECTORY)
-match, nomatch = compare_whole_dataset(dictonairy)
+        return matching_values, non_matching_values
+
+match, nomatch = compare_whole_dataset(FULL_TEMPL_DIRECTORY)
+
 print(match,nomatch)
 
 # match = [0.24684919600173838, 0.21328531412565027] 
