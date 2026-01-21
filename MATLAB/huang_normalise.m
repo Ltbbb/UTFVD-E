@@ -29,17 +29,35 @@ function [img,fvr,rot,tr] = huang_normalise(img, fvr, edges)
 
 [img_h, img_w] = size(img);
 bl = (edges(1,:) + edges(2,:))/2; % Base line
+%disp("bl")
+%disp(bl)
 
 % Fit a straight line through the base line points
 brob = robustfit(1:img_w,bl);
+
+%disp("brob")
+%disp(brob)
+
+%x = 1:10;
+%m = brob(1);
+%b = brob(2); 
+%fplot(@(x)m*x+b, [0 10]);
+
 rot = -1*atan(brob(2)); % Rotation
 tr = img_h/2 - brob(1); % Translation
+%disp(rot);
+%disp(tr);
 
 % Construct the spatial transformation structure for an affine transform
-tform = maketform('affine',[cos(rot), sin(rot),0;-sin(rot),cos(rot),0;0,tr,1]);
+matrix = [cos(rot), sin(rot),0; -sin(rot),cos(rot),0; 0,tr,1];
+disp(matrix);
+tform = maketform('affine',[cos(rot), sin(rot),0; -sin(rot),cos(rot),0; 0,tr,1]);
+disp("tform")
+disp(tform)
 
 % Apply the transformation
 img = imtransform(img,tform,          'XData',[1 img_w],'YData',[1 img_h]);
+imshow(img);
 fvr = imtransform(fvr,tform,'nearest','XData',[1 img_w],'YData',[1 img_h]);
 
 rot = rot*(180/pi); % Convert radians to degrees

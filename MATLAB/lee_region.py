@@ -53,11 +53,11 @@ def lee_region(img, mask_h, mask_w):
 
     # Upper part of filtred image
     img_filt_up = img_filt[:int(half_img_h-1), :];
-    y_up = np.argmin(img_filt_up, axis=0)
+    y_up = np.argmax(img_filt_up, axis=0)
 
     # Lower part of filtred image
     img_filt_lo = img_filt[int(half_img_h-1):, :];
-    y_lo = np.argmax(img_filt_lo, axis=0)
+    y_lo = np.argmin(img_filt_lo, axis=0)
 
     # Fill region between upper and lower edges
     region = np.zeros(img.shape)

@@ -1,0 +1,110 @@
+import os, h5py, itertools, datetime, matplotlib
+import numpy as np
+import cv2
+from PIL import Image
+import matplotlib.pyplot as plt
+from Miura.MaximumCurvature import MaximumCurvature
+from Miura.MiuraMatch import MiuraMatch
+from enum import Enum
+
+max_curvature = MaximumCurvature()
+miura_match = MiuraMatch()
+
+class Guide(Enum):
+     V1 = 1
+     V2 = 2
+     V3 = 3
+     V4 = 4
+     VU = 5
+
+GUIDE = "V1"
+DATA_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Captures"
+CROP_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Crop"
+TEMPL_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Templates"
+
+FULL_DATA_DIRECTORY = os.path.join(DATA_DIRECTORY, GUIDE)
+FULL_CROP_DIRECTORY = os.path.join(CROP_DIRECTORY, GUIDE)
+FULL_TEMPL_DIRECTORY = os.path.join(TEMPL_DIRECTORY, GUIDE)
+
+def compare_whole_dataset(directory):
+        #Function to extract the name and finger portion of the img name
+        #Example: Lisa_L_Index
+        def split(filename):
+            thing = filename.split("_")
+            return thing[:3]
+        
+        matching_values = []
+        non_matching_values = []
+
+        print("[INFO] Scoring all combinations in dataset...")
+
+        #Iterate over all combinations
+        for a, b in itertools.combinations(os.listdir(directory), 2):
+            
+            # img1 = cv2.imread(os.path.join(FULL_DATA_DIRECTORY, a))
+            # img2 = cv2.imread(os.path.join(FULL_DATA_DIRECTORY, b))
+
+            # import the image as pixels
+            img_a = cv2.imread(os.path.join(directory, a), 0)
+            templ1 = np.matrix([[1 if i == 255 else 0 for i in row] for row in img_a])
+            img_b = cv2.imread(os.path.join(directory, b), 0)
+            templ2 = np.matrix([[1 if i == 255 else 0 for i in row] for row in img_b])
+
+            score, _, _ = miura_match.score(templ1, templ2)
+            rounded_score = score.item()
+
+            #If the name + finger are the same, add the found value to the corresponding array
+            if split(a) == split(b):
+                matching_values.append(rounded_score)
+            else:
+                non_matching_values.append(rounded_score)
+            print("[INFO] Scoring of pair done")
+
+        print("[INFO] Matching done") 
+
+        time = datetime.datetime.now()
+        with h5py.File("data_processing/data.hdf5", "w") as file:
+            file.create_dataset(str(time) + " " + GUIDE + " matching", data = matching_values)
+            file.create_dataset(str(time) + " " + GUIDE + " non_matching", data = non_matching_values)
+
+        return matching_values, non_matching_values
+
+match, nomatch = compare_whole_dataset(FULL_TEMPL_DIRECTORY)
+
+print(match,nomatch)
+
+# match = [0.24684919600173838, 0.21328531412565027] 
+# nomatch = [0.08908868001634655, 0.09439788266431408, 0.10506329113924051, 0.10232558139534885, 0.08989266547406083, 0.09339158929546695, 0.09181553801412548, 0.08732737611697808, 0.09001636661211129, 0.09636062861869313, 0.09090909090909093, 0.08726534753932014, 0.11326994625878462, 0.10982658959537572, 0.1079136690647482, 0.09909090909090909, 0.08041329739442948, 0.11826159632260763, 0.11102139685102948, 0.10261914984972093, 0.08593396653098144, 0.09418402777777779, 0.08337303477846593, 0.10524073285044738, 0.10618216139688533, 0.09639953542392567]
+
+range = [0.0,0.5]
+
+plt.hist(match, range=range, density=True, bins=60, alpha=0.5, color='blue', label='Matching')
+plt.hist(nomatch, range=range, density=True, bins=60, alpha=0.5, color='red', label='Non-Matching')
+plt.title(f'Bundling Guide {GUIDE}')
+plt.xlabel('Correlation Score')
+plt.ylabel('Normalized Frequency')
+# plt.ylim(0,35)
+plt.legend(loc='upper right')
+
+plt.show()
+
+def DETCurve(fps,fns):
+    """
+    Given false positive and false negative rates, produce a DET Curve.
+    The false positive rate is assumed to be increasing while the false
+    negative rate is assumed to be decreasing.
+    """
+    axis_min = min(fps[0],fns[-1])
+    fig,ax = plt.subplots()
+    plt.plot(fps,fns)
+    ticks_to_use = [0.001,0.002,0.005,0.01,0.02,0.05,0.1,0.2,0.5,1,2,5,10,20,50]
+    ax.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    ax.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    ax.set_xticks(ticks_to_use)
+    ax.set_yticks(ticks_to_use)
+    plt.axis([0.001,50,0.001,50])
+    plt.show()
+
+# DETCurve(match.mean(), nomatch.mean())
+
+
