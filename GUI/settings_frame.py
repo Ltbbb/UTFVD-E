@@ -120,7 +120,7 @@ class SettingsFrame(ttk.Frame):
             pwm_val = slider_val.get()
             print(f"PWM factor changed to: {pwm_val}")
             rw.send_to_arduino(pwm_val)
-            self.currentPWM = pmw_val
+            self.currentPWM = pwm_val
 
         slider_val = tk.IntVar()
         ttk.Scale(

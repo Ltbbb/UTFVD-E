@@ -61,12 +61,11 @@ class VideoFrame(ttk.Frame):
         currentfinger = self.settingsframe.currentfinger
         currentguide = self.settingsframe.currentguide
         participantname = self.settingsframe.participantname
-        pwm_val = self.settingsframe.currentPWM
         print("button press!!!!")
         if currentfinger == None or currentguide == None or participantname == None:
             showwarning("Warning!", "Fill in all fields")
         capture = self.video_frame
-        image_name = f'data/{currentguide}/{participantname}_{currentfinger}_{SESSION_NUMBER}_{self.img_ctr}_{pwm_val}.png' #TODO: Image storage #TODO: impl counter
+        image_name = f'data/{currentguide}/{participantname}_{currentfinger}_{SESSION_NUMBER}_{self.img_ctr}.png' #TODO: Image storage #TODO: impl counter
         print(image_name)
         self.img_ctr += 1
         if not cv2.imwrite(image_name, capture):
