@@ -13,8 +13,8 @@ class Device(Enum):
     UTSID = 1
     UTFVD = 2
 
-GUIDE = "V1"
-DEVICE = Device.UTSID
+GUIDE = "VU"
+DEVICE = Device.UTFVD
 DATA_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Captures"
 CROP_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Crop"
 TEMPL_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Templates"
@@ -68,6 +68,7 @@ def preprocess(img, device: Device):
 # img = Image.open(os.path.join(FULL_DATA_DIRECTORY, test_filename), mode="r")
 # preprocess(img, DEVICE)
 
+#TODO: EMPTY FOLDER BEFORE FILLING IT AGAIN
 def batch_preprocess(src_directory):
     for file in os.listdir(src_directory):
         filename = os.fsdecode(file)
@@ -88,6 +89,7 @@ def generate_template(img):
 
     return templ
 
+#TODO: EMPTY FOLDER BEFORE FILLING IT AGAIN
 def batch_templates(src_directory):
     for file in os.listdir(src_directory):
         filename = os.fsdecode(file)

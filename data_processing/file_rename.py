@@ -1,7 +1,8 @@
 
 import os
 
-directory_path = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Captures\\VU\\vits"
+personname = "person"
+directory_path = f"C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Captures\\VU\\{personname}"
 # test_file_name = "edwin_L_index_50_1_0.png"
 
 def refactor_file_UTSID(filename):
@@ -40,10 +41,9 @@ def refactor_files_UTSID(directory):
         print(new_filename)
         os.rename(old_filename, new_filename)
 
-def refactor_files_UTSID(directory):
+def refactor_files_UTFVD(directory):
     for file in os.listdir(directory):
         filename = os.fsdecode(file)
-        personname = "person"
         new_name = refactor_file_UTFVD(personname)
         old_filename = os.path.join(directory_path, filename)
         new_filename = os.path.join(directory_path, new_name)
@@ -52,4 +52,4 @@ def refactor_files_UTSID(directory):
         os.rename(old_filename, new_filename)
 
 # refactor_file(test_file_name)
-# refactor_files(directory_path)
+refactor_files_UTFVD(directory_path)
