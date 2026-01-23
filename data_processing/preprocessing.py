@@ -5,9 +5,9 @@ import numpy as np
 import cv2
 import math
 from enum import Enum
-from Miura.MaximumCurvature import MaximumCurvature
-from MATLAB.lee_region import lee_region
-from MATLAB.huang_normalise import huang_normalise
+from pipeline_utils.MaximumCurvature import MaximumCurvature
+from pipeline_utils.lee_region import lee_region
+from pipeline_utils.huang_normalise import huang_normalise
 
 class Device(Enum):
     UTSID = 1

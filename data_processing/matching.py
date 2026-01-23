@@ -3,8 +3,8 @@ import numpy as np
 import cv2
 from PIL import Image
 import matplotlib.pyplot as plt
-from Miura.MaximumCurvature import MaximumCurvature
-from Miura.MiuraMatch import MiuraMatch
+from pipeline_utils.MaximumCurvature import MaximumCurvature
+from pipeline_utils.MiuraMatch import MiuraMatch
 from enum import Enum
 
 max_curvature = MaximumCurvature()

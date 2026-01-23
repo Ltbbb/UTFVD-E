@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-from tkinter import Menu
 from GUI.capture_frame import CaptureFrame
 from GUI.files_frame import FilesFrame
 from GUI.compare_frame import CompareFrame
