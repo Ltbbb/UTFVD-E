@@ -76,35 +76,6 @@ print(match,nomatch)
 # match = [0.24684919600173838, 0.21328531412565027] 
 # nomatch = [0.08908868001634655, 0.09439788266431408, 0.10506329113924051, 0.10232558139534885, 0.08989266547406083, 0.09339158929546695, 0.09181553801412548, 0.08732737611697808, 0.09001636661211129, 0.09636062861869313, 0.09090909090909093, 0.08726534753932014, 0.11326994625878462, 0.10982658959537572, 0.1079136690647482, 0.09909090909090909, 0.08041329739442948, 0.11826159632260763, 0.11102139685102948, 0.10261914984972093, 0.08593396653098144, 0.09418402777777779, 0.08337303477846593, 0.10524073285044738, 0.10618216139688533, 0.09639953542392567]
 
-range = [0.0,0.5]
 
-plt.hist(match, range=range, density=True, bins=60, alpha=0.5, color='blue', label='Matching')
-plt.hist(nomatch, range=range, density=True, bins=60, alpha=0.5, color='red', label='Non-Matching')
-plt.title(f'Bundling Guide {GUIDE}')
-plt.xlabel('Correlation Score')
-plt.ylabel('Normalized Frequency')
-# plt.ylim(0,35)
-plt.legend(loc='upper right')
-
-plt.show()
-
-def DETCurve(fps,fns):
-    """
-    Given false positive and false negative rates, produce a DET Curve.
-    The false positive rate is assumed to be increasing while the false
-    negative rate is assumed to be decreasing.
-    """
-    axis_min = min(fps[0],fns[-1])
-    fig,ax = plt.subplots()
-    plt.plot(fps,fns)
-    ticks_to_use = [0.001,0.002,0.005,0.01,0.02,0.05,0.1,0.2,0.5,1,2,5,10,20,50]
-    ax.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
-    ax.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
-    ax.set_xticks(ticks_to_use)
-    ax.set_yticks(ticks_to_use)
-    plt.axis([0.001,50,0.001,50])
-    plt.show()
-
-# DETCurve(match.mean(), nomatch.mean())
 
 

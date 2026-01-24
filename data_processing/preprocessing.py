@@ -13,12 +13,12 @@ class Device(Enum):
     UTSID = 1
     UTFVD = 2
 
-GUIDE = "VU"
-DEVICE = Device.UTFVD
+GUIDE = "V1"
+DEVICE = Device.UTSID
 DATA_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Captures"
 CROP_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Crop"
 TEMPL_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Templates"
-test_filename = "simay_L_Middle_1_3_30.png"
+test_filename = "thomas_L_Middle_2_25.png"
 
 FULL_DATA_DIRECTORY = os.path.join(DATA_DIRECTORY, GUIDE)
 FULL_CROP_DIRECTORY = os.path.join(CROP_DIRECTORY, GUIDE)
@@ -29,8 +29,8 @@ def preprocess(img, device: Device):
 
     if device == Device.UTSID:
         #Image cropping
-        left = 360
-        right = 700
+        left = 390
+        right = 690
         top = 50
         bottom = 520
     else:
@@ -77,8 +77,6 @@ def batch_preprocess(src_directory):
         plt.imsave(os.path.join(FULL_CROP_DIRECTORY, filename), result, cmap="grey")
     print("[INFO] Batch preprocessing completed")
 
-batch_preprocess(FULL_DATA_DIRECTORY)
-
 def generate_template(img):
     img = ImageOps.grayscale(img) 
     im_arr = np.array(img)
@@ -98,4 +96,5 @@ def batch_templates(src_directory):
         plt.imsave(os.path.join(FULL_TEMPL_DIRECTORY, filename), result, cmap="grey") #TODO: CMAP?
     print("[INFO] Batch template generation completed")
 
+batch_preprocess(FULL_DATA_DIRECTORY)
 batch_templates(FULL_CROP_DIRECTORY)
