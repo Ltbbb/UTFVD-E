@@ -30,6 +30,10 @@ Nm = conv2(I, rot90(R(ch+1:h-ch, cw+1:w-cw),2), 'valid');
 
 % Maximum value of match
 [Nmm,mi] = max(Nm(:)); % (what about multiple maximum values ?)
+disp("hey")
+disp(Nmm)
+disp("hey2")
+disp(mi)
 [t0,s0] = ind2sub(size(Nm),mi);
 
 % Normalize

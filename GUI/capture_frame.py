@@ -1,16 +1,5 @@
-import tkinter as tk
 from tkinter import ttk
-import imutils
-import cv2
-from PIL import Image, ImageTk, ImageOps
-import threading
-from imutils.video import VideoStream
-import time
-from picamera2 import Picamera2
-import numpy as np
-import tkinter as tk
 from tkinter import ttk
-from tkinter.messagebox import showerror, showwarning, showinfo
 from GUI.settings_frame import SettingsFrame
 from GUI.video_frame import VideoFrame
 

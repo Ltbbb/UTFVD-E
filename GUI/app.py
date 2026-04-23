@@ -31,13 +31,9 @@ class App(tk.Tk):
         tab1 = CaptureFrame(notebook, "Frame1.TFrame")
         notebook.add(tab1, text="Capture")
 
-        # Second tab
-        tab2 = FilesFrame(notebook, 'Frame2.TFrame')
-        notebook.add(tab2, text="Files")
-
-        # Third tab
-        tab3 = CompareFrame(notebook, 'Frame3.TFrame')
-        notebook.add(tab3, text="Compare")
+        # Sescond tab
+        tab2 = CompareFrame(notebook, 'Frame3.TFrame')
+        notebook.add(tab2, text="Compare")
 
         # tab4 = ttk.Frame(notebook)
         # notebook.add(tab4, text="Exit")

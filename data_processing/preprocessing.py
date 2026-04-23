@@ -13,12 +13,12 @@ class Device(Enum):
     UTSID = 1
     UTFVD = 2
 
-GUIDE = "V1"
-DEVICE = Device.UTSID
+GUIDE = "VU"
+DEVICE = Device.UTFVD
 DATA_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Captures"
 CROP_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Crop"
 TEMPL_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Templates"
-test_filename = "thomas_L_Middle_2_25.png"
+test_filename = "sil_L_Ring_2_33.png"
 
 FULL_DATA_DIRECTORY = os.path.join(DATA_DIRECTORY, GUIDE)
 FULL_CROP_DIRECTORY = os.path.join(CROP_DIRECTORY, GUIDE)
@@ -53,8 +53,9 @@ def preprocess(img, device: Device):
         arr = np.rot90(arr)
         arr = cv2.cvtColor(arr, cv2.COLOR_BGR2GRAY) 
     
-    #Histogram equalization          
-    equ = cv2.equalizeHist(arr)
+    #Histogram equalization
+    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8,8))
+    equ = clahe.apply(arr)
 
     #Show images next to each other
     # disp = np.hstack((arr,equ)) #stacking images side-by-side
@@ -86,6 +87,9 @@ def generate_template(img):
     print("[INFO] Template Generated")
 
     return templ
+
+# img = Image.open(os.path.join(FULL_CROP_DIRECTORY, test_filename), mode="r")
+# generate_template(img)
 
 #TODO: EMPTY FOLDER BEFORE FILLING IT AGAIN
 def batch_templates(src_directory):

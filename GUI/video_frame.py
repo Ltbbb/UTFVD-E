@@ -1,13 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
-import imutils
 import cv2
 from PIL import Image, ImageTk, ImageOps
 import threading
-from imutils.video import VideoStream
-import time
-from picamera2 import Picamera2
-import numpy as np
+# from picamera2 import Picamera2
 import tkinter as tk
 from tkinter import ttk
 from tkinter.messagebox import showerror, showwarning, showinfo
@@ -44,11 +40,11 @@ class VideoFrame(ttk.Frame):
         self.img_ctr = 0
 
         #create picam object to use for video streaming
-        self.picam2 = Picamera2()
-        config = self.picam2.create_still_configuration()  #TODO: change configuration?
-        self.picam2.configure(config)
-        self.picam2.set_controls({"ExposureTime": 5000})
-        self.picam2.start()
+        # self.picam2 = Picamera2()
+        # config = self.picam2.create_still_configuration()  #TODO: change configuration?
+        # self.picam2.configure(config)
+        # self.picam2.set_controls({"ExposureTime": 5000})
+        # self.picam2.start()
 
         #start a thread that constantly pools the video sensor for
 		# the most recently read frame
@@ -78,7 +74,8 @@ class VideoFrame(ttk.Frame):
         try:
             while not self.stopEvent.is_set(): #TODO: stop event
 				#use picam to capture the frames and resize
-                self.video_frame = self.picam2.capture_array()
+                # self.video_frame = self.picam2.capture_array()
+                self.video_frame = cv2.imread("C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Captures\\V1\\thomas_L_Middle_2_25.png")
 		
 				#Change to image and resize
                 image = Image.fromarray(self.video_frame).resize((HALF_SCREEN_WIDTH, 300))

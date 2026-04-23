@@ -2,6 +2,7 @@ import numpy as np
 from sklearn import linear_model
 import statsmodels.api as sm
 import cv2
+from PIL import Image
 
 # Simple finger normalisation, it aligns the finger to the centre of the 
 # image using an affine transformation, Elliptic projection which is
@@ -70,20 +71,16 @@ def huang_normalise(img, region, edges):
 
     # Apply affine transformation to img
     img_transformed = cv2.warpPerspective(img, affine_matrix, (img_w, img_h))
-    # print(type(img_transformed))
-    # disp = Image.fromarray(img_transformed)
-    # disp.show()
 
     # Apply affine transformation to finger vein region (with nearest neighbor interpolation)
     region_transformed = cv2.warpPerspective(region, affine_matrix, (img_w, img_h), flags=cv2.INTER_NEAREST)
 
+    #Display comparision image
+    # disp1 = np.hstack((img, region)) #stacking images side-by-side
+    # disp2 = np.hstack((img_transformed, region_transformed)) #stacking images side-by-side
+    # disp = np.vstack((disp1,disp2))
+    # disp = Image.fromarray(disp)
+    # disp.show()
+
     rot = rot*(180/np.pi); # Convert radians to degrees
     return img_transformed, region_transformed, rot, tr
-
-# from MATLAB.lee_region import lee_region
-
-# imgpath1 = "MATLAB/1_comp.png"
-# img1 = cv2.imread(imgpath1, 0)
-# region, edges = lee_region(img1, 4, 40)
-# huang_normalise(img1, region, edges)
-

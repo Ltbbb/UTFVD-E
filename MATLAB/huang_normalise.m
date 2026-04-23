@@ -50,14 +50,14 @@ tr = img_h/2 - brob(1); % Translation
 
 % Construct the spatial transformation structure for an affine transform
 matrix = [cos(rot), sin(rot),0; -sin(rot),cos(rot),0; 0,tr,1];
-disp(matrix);
+%disp(matrix);
 tform = maketform('affine',[cos(rot), sin(rot),0; -sin(rot),cos(rot),0; 0,tr,1]);
-disp("tform")
-disp(tform)
+%disp("tform")
+%disp(tform)
 
 % Apply the transformation
 img = imtransform(img,tform,          'XData',[1 img_w],'YData',[1 img_h]);
-imshow(img);
+%imshow(img);
 fvr = imtransform(fvr,tform,'nearest','XData',[1 img_w],'YData',[1 img_h]);
 
 rot = rot*(180/pi); % Convert radians to degrees

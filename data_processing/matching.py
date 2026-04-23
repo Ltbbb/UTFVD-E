@@ -1,32 +1,17 @@
 import os, h5py, itertools, datetime, matplotlib
 import numpy as np
 import cv2
-from PIL import Image
-import matplotlib.pyplot as plt
-from Miura.MaximumCurvature import MaximumCurvature
 from Miura.MiuraMatch import MiuraMatch
-from enum import Enum
+import data_processing.graphs as graphs
 
-max_curvature = MaximumCurvature()
-miura_match = MiuraMatch()
+miura_match = MiuraMatch(cw=50,ch=50) #NOTE: params are changed 
 
-class Guide(Enum):
-     V1 = 1
-     V2 = 2
-     V3 = 3
-     V4 = 4
-     VU = 5
-
-GUIDE = "V1"
-DATA_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Captures"
-CROP_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Crop"
+GUIDE = "VU"
 TEMPL_DIRECTORY = "C:\\Users\\Gebruiker\\OneDrive - University of Twente\\year 4\\Research Project\\Data\\Templates"
 
-FULL_DATA_DIRECTORY = os.path.join(DATA_DIRECTORY, GUIDE)
-FULL_CROP_DIRECTORY = os.path.join(CROP_DIRECTORY, GUIDE)
 FULL_TEMPL_DIRECTORY = os.path.join(TEMPL_DIRECTORY, GUIDE)
 
-def compare_whole_dataset(directory):
+def compare_dataset(directory):
         #Function to extract the name and finger portion of the img name
         #Example: Lisa_L_Index
         def split(filename):
@@ -46,9 +31,9 @@ def compare_whole_dataset(directory):
 
             # import the image as pixels
             img_a = cv2.imread(os.path.join(directory, a), 0)
-            templ1 = np.matrix([[1 if i == 255 else 0 for i in row] for row in img_a])
+            templ1 = np.array([[1 if i == 255 else 0 for i in row] for row in img_a])
             img_b = cv2.imread(os.path.join(directory, b), 0)
-            templ2 = np.matrix([[1 if i == 255 else 0 for i in row] for row in img_b])
+            templ2 = np.array([[1 if i == 255 else 0 for i in row] for row in img_b])
 
             score, _, _ = miura_match.score(templ1, templ2)
             rounded_score = score.item()
@@ -58,7 +43,7 @@ def compare_whole_dataset(directory):
                 matching_values.append(rounded_score)
             else:
                 non_matching_values.append(rounded_score)
-            print("[INFO] Scoring of pair done")
+            print(f"[INFO] Scoring of pair done: {rounded_score}")
 
         print("[INFO] Matching done") 
 
@@ -69,13 +54,17 @@ def compare_whole_dataset(directory):
 
         return matching_values, non_matching_values
 
-match, nomatch = compare_whole_dataset(FULL_TEMPL_DIRECTORY)
+match, nomatch = compare_dataset(FULL_TEMPL_DIRECTORY)
+match = [round(n, 3) for n in match]
+nomatch = [round(n, 3) for n in nomatch]
 
-print(match,nomatch)
+det_curve = graphs.DET_curve(graphs.THRESHOLDS)
+det_curve(match, nomatch, GUIDE)
+hist = graphs.Histogram()
+hist(match,nomatch, GUIDE)
 
-# match = [0.24684919600173838, 0.21328531412565027] 
-# nomatch = [0.08908868001634655, 0.09439788266431408, 0.10506329113924051, 0.10232558139534885, 0.08989266547406083, 0.09339158929546695, 0.09181553801412548, 0.08732737611697808, 0.09001636661211129, 0.09636062861869313, 0.09090909090909093, 0.08726534753932014, 0.11326994625878462, 0.10982658959537572, 0.1079136690647482, 0.09909090909090909, 0.08041329739442948, 0.11826159632260763, 0.11102139685102948, 0.10261914984972093, 0.08593396653098144, 0.09418402777777779, 0.08337303477846593, 0.10524073285044738, 0.10618216139688533, 0.09639953542392567]
-
+print(np.mean(match))
+print(np.mean(nomatch))
 
 
 

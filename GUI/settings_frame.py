@@ -1,16 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
-import imutils
-import cv2
-from PIL import Image, ImageTk, ImageOps
-import threading
-from imutils.video import VideoStream
-import time
-from picamera2 import Picamera2
-import numpy as np
 import tkinter as tk
 from tkinter import ttk
-from tkinter.messagebox import showerror, showwarning, showinfo
 import utils.read_write as rw
 
 class SettingsFrame(ttk.Frame):    
@@ -23,14 +14,32 @@ class SettingsFrame(ttk.Frame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
+        self.grid_rowconfigure(2,weight=1)
 
         self.currentfinger = None
         self.currentguide = None
         self.participantname = None
         self.currentPWM = None
+        self.buttonsdisabled = True
 
-        self.create_sliders_block()
-        self.create_settings_block()
+        settingsthing, lf1, lf2 = self.create_settings_block()
+        settingsthing.grid(column=0,row=1,columnspan=2, sticky="ews")
+
+        name_label = ttk.Label(self, text="Batch capturing:")
+        name_label.grid(column=0,row=0,sticky="news", pady=10)
+        button = tk.Button(self, command=self.enable_buttons(lf1, lf2), text="off")
+        button.grid(column=0,row=0, sticky="e", padx=10)
+
+        
+        sliders = self.create_sliders_block()
+        sliders.grid(column=0,row=2,sticky="ews")
+
+    def enable_buttons(self, lf1, lf2):
+
+        for frame in lf1:
+            pass
+
+        pass
 
     def create_settings_block(self):
         def setnamevar(one, two, three): #FIXME: this is given three params?
@@ -41,15 +50,14 @@ class SettingsFrame(ttk.Frame):
         # s = ttk.Style()
         # s.configure("Settings2.TFrame", background="cyan")
         settingsthing = ttk.Frame(self)
-        settingsthing.grid(column=0,row=0,columnspan=2, sticky="ews")
         settingsthing.grid_columnconfigure(0,weight=1)
         settingsthing.grid_columnconfigure(1,weight=1)
 
         lf1 = self.create_labelframe(settingsthing, "Guide", ["V1", "V2", "V3", "V4", "VX"])
         lf1.grid(column=0, row=1, sticky="news")
 
-        lf1 = self.create_labelframe(settingsthing, "Finger", ["L_Index", "L_Middle", "L_Ring", "R_Index", "R_Middle", "R_Ring"])
-        lf1.grid(column=1, row=1, sticky="news")
+        lf2 = self.create_labelframe(settingsthing, "Finger", ["L_Index", "L_Middle", "L_Ring", "R_Index", "R_Middle", "R_Ring"])
+        lf2.grid(column=1, row=1, sticky="news")
 
         name_label = ttk.Label(settingsthing, text="Name:")
         name_label.grid(column=0,row=0,sticky="news", pady=10)
@@ -58,6 +66,8 @@ class SettingsFrame(ttk.Frame):
         participant_name_var.trace_add("write", callback=setnamevar)
         namebox = ttk.Entry(settingsthing, textvariable=participant_name_var)
         namebox.grid(column=1,row=0,sticky="news", pady=10)
+
+        return settingsthing, lf1, lf2
 
     def create_labelframe(self, parent, name, values: list):
             def selected():
@@ -75,7 +85,7 @@ class SettingsFrame(ttk.Frame):
 
             for val in values:
                 # create a radio button
-                radio = ttk.Radiobutton(lf, text=val, value=val, variable=name_var, command=selected)
+                radio = ttk.Radiobutton(lf, text=val, value=val, variable=name_var, command=selected, state="disabled")
                 radio.grid(row=grid_row, column=0, ipadx=10, ipady=10, sticky="nw")
                 # grid column
                 grid_row += 1
@@ -86,7 +96,6 @@ class SettingsFrame(ttk.Frame):
         # s = ttk.Style()
         # s.configure("Sliders.TFrame", background="blue")
         sliders = ttk.Frame(self)
-        sliders.grid(column=0,row=1,sticky="ews")
 
         sliders.grid_columnconfigure(0,weight=1)
         sliders.grid_rowconfigure(0, weight=1)
@@ -101,6 +110,8 @@ class SettingsFrame(ttk.Frame):
 
         # slider3 = self.create_slider(parent=sliders, name="zoom", callback=None)
         # slider3.grid(column=0,row=2,sticky="nsew", pady=10)
+
+        return sliders
 
     # def PWM_callback(self, val):
     #     pwm_val= int(val.split(".")[0]) * 10

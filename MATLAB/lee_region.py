@@ -32,8 +32,7 @@ def lee_region(img, mask_h, mask_w):
 
     [img_h, img_w] = img.shape
     
-    # im = Image.fromarray(img)
-    # im.show()
+    im1 = Image.fromarray(img)
 
     # Determine lower half starting point
     if img_h % 2 == 0:
@@ -48,24 +47,27 @@ def lee_region(img, mask_h, mask_w):
 
     # Filter image using mask
     img_filt = cv2.filter2D(img, cv2.CV_32F, mask) #NOTE: this filter returns just slightly different results than the MATLAB function
-    # im = Image.fromarray(img_filt)
-    # im.show(title="img_filt")
+    im2 = Image.fromarray(img_filt)
 
     # Upper part of filtred image
     img_filt_up = img_filt[:int(half_img_h-1), :];
-    y_up = np.argmax(img_filt_up, axis=0)
+    y_up = np.argmin(img_filt_up, axis=0)
 
     # Lower part of filtred image
     img_filt_lo = img_filt[int(half_img_h-1):, :];
-    y_lo = np.argmin(img_filt_lo, axis=0)
+    y_lo = np.argmax(img_filt_lo, axis=0)
 
     # Fill region between upper and lower edges
     region = np.zeros(img.shape)
     img_filt_lo_h = img_filt_lo.shape[0]
     for i in range(img_w - 1):
         region[y_up[i] : y_lo[i]+img_filt_lo_h, i] = 255
-    # im = Image.fromarray(region)
-    # im.show(title="mask")
+    im3 = Image.fromarray(region)
+
+    #Display comparison images next to each other
+    # disp = np.hstack((im1,im2,im3)) #stacking images side-by-side
+    # disp = Image.fromarray(disp)
+    # disp.show()
 
     # Save y-position of finger edges
     edges = np.zeros((2,img_w))
